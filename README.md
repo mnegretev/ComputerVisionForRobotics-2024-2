@@ -25,7 +25,7 @@ Para probar que todo se instaló y compiló correctamente:
 
 * $ cd 
 * $ source ComputerVisionForRobotics-2024-2/catkin_ws/devel/setup.bash
-* $ roslaunch surge_et_ambula vision.launch
+* $ roslaunch surge_et_ambula vision_course.launch
 
 Si todo se instaló y compiló correctamente, se debería ver un visualizador como el siguiente:
 ![rviz](https://github.com/mnegretev/ComputerVisionForRobotics-2024-2/blob/master/Media/rviz.png)
