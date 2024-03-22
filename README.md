@@ -28,13 +28,13 @@ Para probar que todo se instaló y compiló correctamente:
 * $ roslaunch surge_et_ambula vision.launch
 
 Si todo se instaló y compiló correctamente, se debería ver un visualizador como el siguiente:
-![rviz](https://github.com/mnegretev/ComputerVisionForRobotics-2024-2/blob/main/Media/rviz.png)
+![rviz](https://github.com/mnegretev/ComputerVisionForRobotics-2024-2/blob/master/Media/rviz.png)
 
 Un ambiente simulado como el siguiente:
-![gazebo](https://github.com/mnegretev/ComputerVisionForRobotics-2024-2/blob/main/Media/gazebo.png)
+![gazebo](https://github.com/mnegretev/ComputerVisionForRobotics-2024-2/blob/master/Media/gazebo.png)
 
 Y una GUI como la siguiente:
-![GUIExample](https://github.com/mnegretev/ComputerVisionForRobotics-2024-2/blob/main/Media/gui.png)
+![GUIExample](https://github.com/mnegretev/ComputerVisionForRobotics-2024-2/blob/master/Media/gui.png)
 
 
 ## Contacto
