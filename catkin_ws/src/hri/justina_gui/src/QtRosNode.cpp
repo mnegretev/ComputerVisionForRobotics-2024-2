@@ -39,7 +39,7 @@ void QtRosNode::run()
     ros::Rate loop(30);
     pubCmdVel     = n->advertise<geometry_msgs::Twist>("/cmd_vel", 1);
     
-    pubTorso      = n->advertise<std_msgs::Float64>("/torso_controller/command", 1);
+    pubTorso      = n->advertise<std_msgs::Float64>("/hardware/torso/goal_pose", 1);
     pubLaGoalQ    = n->advertise<std_msgs::Float64MultiArray>("/hardware/left_arm/goal_pose", 1);
     pubRaGoalQ    = n->advertise<std_msgs::Float64MultiArray>("/hardware/right_arm/goal_pose", 1);
     pubLaGoalTraj = n->advertise<trajectory_msgs::JointTrajectory>("/manipulation/la_q_trajectory",1);
@@ -62,8 +62,7 @@ void QtRosNode::run()
     pubSpeechGen       = n->advertise<sound_play::SoundRequest>("/hri/speech_generator", 1);
     pubFakeSpeechRecog = n->advertise<hri_msgs::RecognizedSpeech>("/hri/sp_rec/recognized", 1);
     subRecogSpeech     = n->subscribe("/hri/sp_rec/recognized",1, &QtRosNode::callback_recognized_speech, this);
-
-    cltPlanPath            = n->serviceClient<nav_msgs::GetPlan>                ("/path_planning/plan_path");
+        
     cltFindLines           = n->serviceClient<vision_msgs::FindLines>           ("/vision/line_finder/find_table_edge");
     cltFindHoriPlanes      = n->serviceClient<vision_msgs::FindPlanes>          ("/vision/line_finder/find_horizontal_plane_ransac");
     cltTrainObject         = n->serviceClient<vision_msgs::TrainObject>         ("/vision/obj_reco/detect_and_train_object");
@@ -71,6 +70,8 @@ void QtRosNode::run()
     cltRecogObject         = n->serviceClient<vision_msgs::RecognizeObject >    ("/vision/obj_reco/detect_and_recognize_object");
     cltGetPointsAbovePlane = n->serviceClient<vision_msgs::PreprocessPointCloud>("/vision/get_points_above_plane");
     pubHumanPoseEnable     = n->advertise<std_msgs::Bool>("/vision/human_pose/enable", 1);
+    pubTakeObject          = n->advertise<std_msgs::String>("/plannning/simple_task/take_object", 1);
+
     pubLegFinderEnable     = n->advertise<std_msgs::Bool>("/hri/leg_finder/enable", 1);
     pubFollowHumanEnable   = n->advertise<std_msgs::Bool>("/hri/human_following/enable", 1);
     
@@ -363,16 +364,6 @@ void QtRosNode::callback_recognized_speech(const hri_msgs::RecognizedSpeech::Con
     spr_recognized = msg->hypothesis[0];
 }
 
-bool QtRosNode::call_plan_path(float start_x, float start_y, float goal_x, float goal_y)
-{
-    nav_msgs::GetPlan srv;
-    srv.request.start.pose.position.x = start_x;
-    srv.request.start.pose.position.y = start_y;
-    srv.request.goal.pose.position.x = goal_x;
-    srv.request.goal.pose.position.y = goal_y;
-    return cltPlanPath.call(srv);
-}
-
 bool QtRosNode::call_find_lines()
 {
     vision_msgs::FindLines srv;
@@ -423,14 +414,19 @@ bool QtRosNode::call_train_object(std::string name)
 bool QtRosNode::call_recognize_objects()
 {
     vision_msgs::RecognizeObjects srv;
-    boost::shared_ptr<sensor_msgs::PointCloud2 const> ptr;
-    ptr = ros::topic::waitForMessage<sensor_msgs::PointCloud2>("/camera/depth_registered/points", ros::Duration(1.0));
-    if(ptr==NULL)
-    {
-        std::cout << "JustinaGUI.->Cannot get point cloud before calling train object service..." << std::endl;
-        return false;
-    }
-    srv.request.point_cloud = *ptr;
+    boost::shared_ptr<sensor_msgs::PointCloud2 const> ptrCloud;
+    boost::shared_ptr<sensor_msgs::Image const> ptrImg;
+    ptrCloud = ros::topic::waitForMessage<sensor_msgs::PointCloud2>("/camera/depth_registered/points", ros::Duration(1.0));
+    ptrImg   = ros::topic::waitForMessage<sensor_msgs::Image>("/camera/depth_registered/rgb/image_raw", ros::Duration(1.0));
+    if(ptrCloud==NULL)
+        std::cout << "JustinaGUI.->WARNING!!!! Cannot get point cloud before calling recognize object service..." << std::endl;
+    else
+        srv.request.point_cloud = *ptrCloud;
+    if(ptrImg == NULL)
+        std::cout << "JustinaGUI.->WARNING!!!! Cannot get image before calling recognize object service..." << std::endl;
+    else
+        srv.request.image = *ptrImg;
+    
     return cltRecogObjects.call(srv);
 }
 
@@ -448,6 +444,53 @@ bool QtRosNode::call_recognize_object(std::string name)
     srv.request.name = name;
     return cltRecogObject.call(srv);
 }
+
+
+
+
+
+void QtRosNode::call_take_object(std::string name)
+{
+    std_msgs::String msg;
+    msg.data = name;
+
+    std::cout << "JustinaGUI.->Take object**************************************************" << std::endl;
+    
+    /*
+    vision_msgs::RecognizeObject srv;
+    boost::shared_ptr<sensor_msgs::PointCloud2 const> ptr;
+    ptr = ros::topic::waitForMessage<sensor_msgs::PointCloud2>("/camera/depth_registered/points", ros::Duration(1.0));
+    if(ptr==NULL)
+    {
+        std::cout << "JustinaGUI.->Cannot get point cloud before calling train object service..." << std::endl;
+        return false;
+    }
+    
+    srv.request.point_cloud = *ptr;
+    srv.request.name = name;
+    */
+    pubTakeObject.publish(msg);
+    msg.data = " ";
+    pubTakeObject.publish(msg);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 bool QtRosNode::call_get_points_above_plane()
 {
