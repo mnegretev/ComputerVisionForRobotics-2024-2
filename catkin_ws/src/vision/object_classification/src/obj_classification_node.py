@@ -57,7 +57,7 @@ def main():
     print("ObjClassification.->Loaded model")
     result_img = numpy.zeros((512, 512, 3), numpy.uint8)
 
-    rospy.Service("/vision/obj_reco/recognize_objects_yolo", RecognizeObjects, callback_recognize_objects)
+    rospy.Service("/vision/obj_reco/detect_and_recognize_objects", RecognizeObjects, callback_recognize_objects)
     while not rospy.is_shutdown():
         cv2.imshow("YOLO - Recognition Result", result_img)
         cv2.waitKey(10)
