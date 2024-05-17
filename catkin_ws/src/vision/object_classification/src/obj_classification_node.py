@@ -9,12 +9,15 @@ from yolov5.utils.torch_utils import select_device
 from yolov5.models.experimental import attempt_load
 from yolov5.utils.general import *
 import torch
+import ros_numpy
 
 def callback_recognize_objects(req):
     global device, model, min_confidence, result_img
     print("Received request img encodeing " + req.image.encoding)
     bridge = CvBridge()
-    img = bridge.imgmsg_to_cv2(req.image)
+    img = bridge.imgmsg_to_cv2(req.image)   
+    cloud = ros_numpy.numpify(req.point_cloud)
+    print(cloud.shape)
     result_img = numpy.copy(img)
     img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
     img = torch.from_numpy(img).to(device) # RGB IMAGE TENSOR (TORCH)

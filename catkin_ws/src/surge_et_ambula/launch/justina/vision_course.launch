@@ -25,7 +25,7 @@
 
   <include file="$(find surge_et_ambula)/launch/justina/navigation.launch"/>
 
-  <node name="object_classification" pkg="object_classification" type="obj_classification_node.py" output="screen">
+  <!--node name="object_classification" pkg="object_classification" type="obj_classification_node.py" output="screen">
     <param name="model" value="$(find object_classification)/src/weights/TaRJustv3_ycb.pt"/>
-  </node>
+  </node-->
 </launch>
