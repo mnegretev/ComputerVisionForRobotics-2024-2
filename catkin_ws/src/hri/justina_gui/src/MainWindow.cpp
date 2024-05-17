@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->navBtnCalcPath, SIGNAL(clicked()), this, SLOT(navBtnCalcPath_pressed()));
     QObject::connect(ui->navBtnExecPath, SIGNAL(clicked()), this, SLOT(navBtnExecPath_pressed()));
 
-    //QObject::connect(ui->torTxtPos, SIGNAL(valueChanged(double)), this, SLOT(torSbPosValueChanged(double)));
+    QObject::connect(ui->torTxtPos, SIGNAL(valueChanged(double)), this, SLOT(torSbPosValueChanged(double)));
 
     QObject::connect(ui->laBtnXp    , SIGNAL(clicked()), this, SLOT(laBtnXpPressed()));
     QObject::connect(ui->laBtnXm    , SIGNAL(clicked()), this, SLOT(laBtnXmPressed()));
@@ -97,6 +97,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->visBtnFindLines, SIGNAL(clicked()), this, SLOT(visFindLinesClicked()));
     QObject::connect(ui->visBtnFindHoriPlanes, SIGNAL(clicked()), this, SLOT(visFindHoriPlanesClicked()));
     QObject::connect(ui->visTxtTrainObject, SIGNAL(returnPressed()), this, SLOT(visTrainObjectReturnPressed()));
+    
+    
+
+    QObject::connect(ui->tksTxtTakeObject, SIGNAL(returnPressed()), this, SLOT(visTakeObjectReturnPressed()));
+    
+
+    
     QObject::connect(ui->visBtnRecogObjects, SIGNAL(clicked()), this, SLOT(visRecognizeObjectsClicked()));
     QObject::connect(ui->visTxtRecognizeObject, SIGNAL(returnPressed()), this, SLOT(visRecognizeObjectReturnPressed()));
     QObject::connect(ui->visBtnPointsAbovePlane, SIGNAL(clicked()), this, SLOT(visGetPointsAbovePlaneClicked()));
@@ -362,7 +369,7 @@ void MainWindow::navBtnCalcPath_pressed()
 	return;
     }
 
-    qtRosNode->call_plan_path(startX, startY, goalX, goalY);
+
 }
 
 void MainWindow::navBtnExecPath_pressed()
@@ -402,7 +409,7 @@ void MainWindow::navBtnExecPath_pressed()
 
 void MainWindow::torSbPosValueChanged(double d)
 {
-    //qtRosNode->publish_torso_position(ui->torTxtPos->value());
+    qtRosNode->publish_torso_position(ui->torTxtPos->value());
 }
 
 /*
@@ -877,6 +884,30 @@ void MainWindow::visRecognizeObjectsClicked()
 {
     qtRosNode->call_recognize_objects();
 }
+
+
+
+
+
+
+void MainWindow::visTakeObjectReturnPressed()
+{
+    qtRosNode->call_take_object(ui->tksTxtTakeObject->text().toStdString());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void MainWindow::visGetPointsAbovePlaneClicked()
 {
