@@ -5,12 +5,14 @@
 #include "ros/ros.h"
 #include "std_msgs/Float64MultiArray.h"
 #include "std_msgs/Float64.h"
-#include "std_msgs/Float64.h"
+#include "std_msgs/Float32.h"
+#include "std_msgs/String.h"
 #include "std_msgs/Bool.h"
 #include "geometry_msgs/Twist.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "nav_msgs/GetPlan.h"
 #include "sensor_msgs/PointCloud2.h"
+#include "sensor_msgs/Image.h"
 #include "trajectory_msgs/JointTrajectory.h"
 #include "sound_play/SoundRequest.h"
 #include "tf/transform_listener.h"
@@ -48,12 +50,15 @@ public:
     ros::Publisher pubHumanPoseEnable;
     ros::Publisher pubLegFinderEnable;
     ros::Publisher pubFollowHumanEnable;
+    ros::Publisher pubTakeObject;
+
     ros::Subscriber subLaCurrentQ;
     ros::Subscriber subLaVoltage;
     ros::Subscriber subRaCurrentQ;
     ros::Subscriber subRaVoltage;
     ros::Subscriber subRecogSpeech;
-    ros::ServiceClient cltPlanPath;
+    ros::Subscriber subObjectStatus;
+
     ros::ServiceClient cltLaIKPose2Pose;
     ros::ServiceClient cltRaIKPose2Pose;
     ros::ServiceClient cltLaIKPose2Traj;
@@ -112,12 +117,20 @@ public:
     void publish_fake_speech_recog(std::string text_to_say);
     void callback_recognized_speech(const hri_msgs::RecognizedSpeech::ConstPtr& msg);
 
-    bool call_plan_path(float start_x, float start_y, float goal_x, float goal_y);
     bool call_find_lines();
     bool call_find_horizontal_planes();
     bool call_train_object(std::string name);
     bool call_recognize_objects();
     bool call_recognize_object(std::string name);
+
+
+
+
+    void call_take_object(std::string name_object);
+
+
+
+
     bool call_get_points_above_plane();
     void publish_enable_human_pose_detection(bool enable);
     void publish_enable_human_following(bool enable);
