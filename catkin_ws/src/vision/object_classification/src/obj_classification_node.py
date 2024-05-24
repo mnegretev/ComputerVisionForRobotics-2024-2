@@ -46,11 +46,11 @@ def callback_recognize_objects(req):
                 name = model.names[int(cls.cpu().tolist())] 
                 result_img=cv2.rectangle(result_img ,(x0,y0), (x1,y1),  (0, 255, 0), 2)
                 mask_black = np.zeros(process_img.shape,dtype=np.uint8)
-                mask = cv2.rectangle(mask_black ,(x0,y0), (x1,y1),  (255, 255, 255), -1)
+                mask = cv2.rectangle(mask_black ,(x0-1,y0-1), (x1+1,y1+1),  (255, 255, 255), -1)
                 gray  = cv2.cvtColor(process_img, cv2.COLOR_BGR2GRAY)
                 canny = cv2.Canny(gray, 50, 254)
                 canny = cv2.bitwise_and(canny,mask[:,:,0])
-                kernel = np.ones((7, 7), np.uint8)
+                kernel = np.ones((15, 15), np.uint8)
                 dilated = cv2.dilate(canny,kernel)
                 eroded = cv2.erode(dilated,kernel)
                 contours, hierarchy = cv2.findContours(eroded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
