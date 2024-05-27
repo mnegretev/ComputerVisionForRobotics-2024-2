@@ -32,8 +32,6 @@ def callback_recognize_objects(req):
     img = torch.moveaxis(img,3,1)                  #Channel order for YOLO
     pred = model(img, augment=False)[0]
     pred = non_max_suppression(pred)  # IOU
-    
-
     resp = RecognizeObjectsResponse()
     for det in pred:
         for x0,y0,x1,y1, conf, cls in (det):# Model Result is bounding box  confidence  and class
@@ -56,8 +54,8 @@ def callback_recognize_objects(req):
                 contours, hierarchy = cv2.findContours(eroded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
                 for c in contours:
                    poly = cv2.fillConvexPoly(eroded, points=c, color=(255,255,255))
-                   eroded = cv2.bitwise_or(eroded,poly)                   
-                mask_acum = cv2.bitwise_or(mask_acum,eroded)
+                   segmented = cv2.bitwise_or(eroded,poly)
+                mask_acum = cv2.bitwise_or(mask_acum,segmented)
                 result_img= cv2.putText(result_img, name+" "+str(confidence),(x0,y0-2),cv2.FONT_HERSHEY_SIMPLEX,0.5,(0,255,0),1)
                 visobj = VisionObject()
                 visobj.id = name
@@ -88,7 +86,7 @@ def main():
     rospy.Service("/vision/obj_reco/detect_and_recognize_objects", RecognizeObjects, callback_recognize_objects)
     while not rospy.is_shutdown():
         cv2.imshow("YOLO - Recognition Result", result_img)
-        cv2.imshow("Processing", process_img)
+        cv2.imshow("Segmentation Result", process_img)
         cv2.waitKey(10)
         loop.sleep()
 
