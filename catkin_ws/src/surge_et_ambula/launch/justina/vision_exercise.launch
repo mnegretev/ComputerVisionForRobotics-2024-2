@@ -1,0 +1,5 @@
+<launch>
+  <node name="object_classification" pkg="object_classification" type="obj_classification_node.py" output="screen">
+    <param name="model" value="$(find object_classification)/src/weights/TaRJustv3_ycb.pt"/>
+  </node>
+</launch>
